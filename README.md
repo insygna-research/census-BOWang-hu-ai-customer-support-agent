@@ -1,5 +1,14 @@
 # AI Customer Support Agent
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-blue?logo=python" alt="Python">
+  <img src="https://img.shields.io/badge/LangChain-0.3-green" alt="LangChain">
+  <img src="https://img.shields.io/badge/OpenAI-GPT--4o--mini-brightgreen" alt="OpenAI">
+  <img src="https://img.shields.io/badge/FastAPI-0.115-teal?logo=fastapi" alt="FastAPI">
+  <img src="https://img.shields.io/badge/Streamlit-1.43-red?logo=streamlit" alt="Streamlit">
+  <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
+</p>
+
 An intelligent customer service chatbot built with **LangChain + OpenAI**, providing automated order inquiries, return/exchange policy consultations, FAQ answers, and more.
 
 ## ✨ Features
@@ -106,6 +115,18 @@ print(response.json()["reply"])
 4. **Graceful Degradation**: Multi-layer exception handling; auto-switches to mock mode when API Key is missing
 5. **Session Management**: Supports multi-user sessions with independent conversation histories
 
+## 🚀 Related AI Projects
+
+Check out my other AI agent projects:
+
+| Project | Description |
+|---------|-------------|
+| [AI Multi-Agent Workflow](https://github.com/BOWang-hu/ai-multi-agent-workflow) | Multi-agent collaboration system with Researcher, Writer, Reviewer & Coordinator roles |
+| [AI RAG Knowledge Agent](https://github.com/BOWang-hu/ai-rag-knowledge-agent) | Document Q&A using RAG with Chroma vector database |
+| [AI Code Review Agent](https://github.com/BOWang-hu/ai-code-review-agent) | Automated code review combining static analysis with AI |
+
+---
+
 ## 📄 License
 
-MIT
+MIT — feel free to use, modify, and distribute.
