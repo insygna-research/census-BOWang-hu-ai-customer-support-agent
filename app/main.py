@@ -1,6 +1,7 @@
 """
-AI 瀹㈡湇鑱婂ぉ鏈哄櫒浜��� - FastAPI 涓诲叆鍙���
-鎻愪緵 RESTful API 鎺ュ彛
+AI Customer Support Agent - FastAPI Main Entry
+
+Provides RESTful API endpoints for the customer service agent.
 """
 from __future__ import annotations
 
@@ -13,9 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from app import settings
-from app.agent import chat
+from app.agent import chat, reset_agent
 
-# 閰嶇疆鏃ュ織
+# Configure logging
 logging.basicConfig(
     level=getattr(logging, settings.log_level.upper(), logging.INFO),
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -23,16 +24,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# ===== 鏁版嵁妯″瀷 =====
+# ===== Data Models =====
+
 
 class ChatRequest(BaseModel):
-    """鑱婂ぉ璇锋眰"""
+    """Chat request payload."""
     message: str
     session_id: str = "default"
 
 
 class ChatResponse(BaseModel):
-    """鑱婂ぉ鍝嶅簲"""
+    """Chat response payload."""
     reply: str
     session_id: str
     success: bool
@@ -40,34 +42,35 @@ class ChatResponse(BaseModel):
 
 
 class HealthResponse(BaseModel):
-    """鍋ュ悍妫���鏌ュ搷搴���"""
+    """Health check response."""
     status: str
     api_key_configured: bool
     version: str = "1.0.0"
 
 
-# ===== 搴旂敤鐢熷懡鍛ㄦ湡 =====
+# ===== Application Lifecycle =====
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """搴旂敤鐢熷懡鍛ㄦ湡绠＄悊"""
-    logger.info("馃殌 AI 瀹㈡湇鑱婂ぉ鏈哄櫒浜哄惎鍔ㄤ腑...")
+    """Application lifecycle management."""
+    logger.info("🚀 AI Customer Support Agent starting up...")
     if not settings.is_api_key_set:
-        logger.warning("鈿狅笍  OPENAI_API_KEY 鏈���閰嶇疆锛佽���峰湪 .env 鏂囦欢涓���璁剧疆銆���")
+        logger.warning("⚠️  OPENAI_API_KEY not configured! Set it in .env file.")
     yield
-    logger.info("馃憢 AI 瀹㈡湇鑱婂ぉ鏈哄櫒浜哄凡鍏抽棴銆���")
+    logger.info("👋 AI Customer Support Agent shutting down.")
 
 
-# ===== 鍒涘缓搴旂敤 =====
+# ===== Create Application =====
 
 app = FastAPI(
-    title="AI 瀹㈡湇鑱婂ぉ鏈哄櫒浜��� API",
-    description="鍩轰簬 LangChain 鐨勬櫤鑳藉���㈡湇浠ｇ悊锛屾敮鎸佽���㈠崟鏌ヨ������銆侀������鎹㈣揣鏀跨瓥銆丗AQ 绛���",
+    title="AI Customer Support Agent API",
+    description="Intelligent customer service agent powered by LangChain. Supports order inquiries, return policies, FAQ, and more.",
     version="1.0.0",
     lifespan=lifespan,
 )
 
-# CORS 閰嶇疆
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -77,37 +80,37 @@ app.add_middleware(
 )
 
 
-# ===== API 璺���鐢��� =====
+# ===== API Routes =====
 
-@app.get("/health", response_model=HealthResponse, tags=["绯荤粺"])
+
+@app.get("/health", response_model=HealthResponse, tags=["System"])
 async def health_check():
-    """鍋ュ悍妫���鏌ョ������鐐���"""
+    """Health check endpoint."""
     return HealthResponse(
         status="ok",
         api_key_configured=settings.is_api_key_set,
     )
 
 
-@app.post("/chat", response_model=ChatResponse, tags=["鑱婂ぉ"])
+@app.post("/chat", response_model=ChatResponse, tags=["Chat"])
 async def chat_endpoint(request: ChatRequest):
-    """澶勭悊鐢ㄦ埛鑱婂ぉ娑堟伅"""
+    """Process a chat message from the user."""
     if not request.message.strip():
-        raise HTTPException(status_code=400, detail="娑堟伅涓嶈兘涓虹┖")
+        raise HTTPException(status_code=400, detail="Message cannot be empty")
 
-    logger.info(f"鏀跺埌娑堟伅 [浼氳瘽:{request.session_id}]: {request.message[:50]}...")
+    logger.info(f"Received message [session:{request.session_id}]: {request.message[:50]}...")
     result = await chat(request.message, request.session_id)
     return ChatResponse(**result)
 
 
-@app.post("/chat/stream", tags=["鑱婂ぉ"])
-async def chat_stream_endpoint(request: ChatRequest):
-    """娴佸紡鑱婂ぉ锛堥���勭暀 - 瀹為檯椤圭洰涓���鍙���鐢��� SSE锛���"""
-    # 绠���鍖栫増鏈���锛岀洿鎺ヨ繑鍥為潪娴佸紡缁撴灉
-    result = await chat(request.message, request.session_id)
-    return ChatResponse(**result)
+@app.post("/reset", tags=["System"])
+async def reset_agent_endpoint():
+    """Reset the agent instance (clears memory and reinitializes)."""
+    reset_agent()
+    return {"message": "Agent reset successfully"}
 
 
-# ===== 鐩存帴杩愯������ =====
+# ===== Direct Execution =====
 
 if __name__ == "__main__":
     import uvicorn

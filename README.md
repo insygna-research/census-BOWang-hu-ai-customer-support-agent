@@ -1,109 +1,111 @@
-# é¦ƒí²¤í²– AI ç€¹ãˆ¡æ¹‡é‘±å©‚ã‰éˆå“„æ«’æµœí²º
+# AI Customer Support Agent
 
-é©è½°ç°¬ **LangChain + OpenAI** é‹å‹«ç¼“é¨å‹¬æ«¤é‘³è—‰í²®ãˆ¡æ¹‡æµ ï½‡æ‚Šç»¯è¤ç²ºé”›å±¾å½æ¸šæ¶œí²®ãˆ å´ŸéŒãƒ¨í²¯í²¢éŠ†ä¾€í²€í²€é¹ãˆ£æ£éœã„¨í²¯í²¢éŠ†ä¸—AQ ç‘™ï½‡ç“Ÿç»›å¤åšœé”ã„¥í²®ãˆ¡æ¹‡é‘³è—‰å§éŠ†í²‚
+An intelligent customer service chatbot built with **LangChain + OpenAI**, providing automated order inquiries, return/exchange policy consultations, FAQ answers, and more.
 
-## é‰í²¨ é”ç†»å…˜é—è§„í²€í²§
+## âœ¨ Features
 
-| é”ç†»å…˜ | ç’‡å­˜æ§‘ |
-|------|------|
-| é¦ƒæ‘ **ç’ãˆ å´ŸéŒãƒ¨í²¯í²¢** | éè§„åµç’ãˆ å´Ÿé™é”‹ç…¡ç’‡ãˆ¢å¢¿å¨´ä½ºå§¸é¬ä½µí²€ä¾€í²¢å‹®í²®ï¿ í²€ä½½æªéƒå •æ£¿ |
-| é¦ƒæ”§ **é–«í²€é¹ãˆ£æ£é€è·¨ç“¥** | é‘·í²ªé”ã„§ç“Ÿæ¾¶å¶‰í²€í²€é¹ãˆ£æ£éŠ†ä¾€í²€í²€å¨†ç‚¬æ–‚ç»›í²– |
-| é‰‚í²“ **FAQ ç‘™ï½‡ç“Ÿ** | ç”¯æ­Œí²§ä¾€æ£¶æ£°æ¨»æ«¤é‘³è—‰å°®é–°å¶…æ‹°é¥ç‚µç“Ÿ |
-| é¦ƒí²§í²  **ç€µç¡…ç˜½ç’æ¿ç¹‚** | é©è½°ç°¬ ConversationSummaryBufferMemory é¨å‹¯æš±ç€µç¡…ç˜½ç’æ¿ç¹‚ |
-| é¦ƒå¸¹ **Web UI** | Streamlit é‹å‹«ç¼“é¨å‹«å¼¸æ¿‚å€Ÿäº°æ¾¶â•ƒæ™«é—ˆí²¢ |
-| é¦ƒæ”² **REST API** | FastAPI é»æ„ªç·µéå›§å™¯ HTTP éºãƒ¥å½› |
-| é¦ƒæƒ“ **Docker é–®ã„§è®²** | æ¶“í²€é–¿í²®ç€¹ç‘°æ«’é–æ ­å„´ç¼ƒí²² |
+| Feature | Description |
+|---------|-------------|
+| ğŸ“¦ **Order Tracking** | Look up order status, shipping info, and estimated delivery |
+| ğŸ”„ **Return/Exchange Policy** | Automated answers about returns, refunds, and after-sales |
+| ğŸ’¬ **FAQ Matching** | Smart keyword matching for frequently asked questions |
+| ğŸ§  **Conversation Memory** | Long conversation memory via `ConversationSummaryBufferMemory` |
+| ğŸ–¥ï¸ **Web UI** | Friendly chat interface built with Streamlit |
+| ğŸ”Œ **REST API** | Standard HTTP API via FastAPI |
+| ğŸ³ **Docker Support** | One-click containerized deployment |
 
-## é¦ƒå½ˆé””í² é¶í²€éˆí²¯é‹èˆµç€¯
+## ğŸ—ï¸ Architecture
 
 ```
-é¢ã„¦åŸ›æˆæ’³å† éˆ«í²’ Streamlit UI éˆ«í²’ FastAPI éˆ«í²’ LangChain Agent éˆ«í²’ OpenAI LLM
-                                  éˆ«í²“
-                            Tools å®¸ãƒ¥å¿çí²‚
-                     éˆ¹å±¸æ”¢éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²¬éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²¬éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²¬éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²
-                     éˆ¹í²‚ ç’ãˆ å´Ÿ  éˆ¹í²‚ é–«í²€é¹ãˆ£æ£ éˆ¹í²‚ FAQ  éˆ¹í²‚ éƒå •æ£¿  éˆ¹í²‚
-                     éˆ¹æ–ºæ”¢éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹ç²¹æ”¢éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹ç²¹æ”¢éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹ç²¹æ”¢éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²€éˆ¹í²˜
+User Input â†’ Streamlit UI â†’ FastAPI â†’ LangChain Agent â†’ OpenAI LLM
+                                    â†“
+                              Tools Layer
+                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                    â”‚  Order   â”‚ Return   â”‚   FAQ    â”‚  Time    â”‚
+                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
-## é¦ƒæ®Œ è¹‡í²«é–«ç†·ç´‘æ¿®í²‹
+## ğŸš€ Quick Start
 
-### é“å¶‡ç–†é‰â€²æ¬¢
+### Prerequisites
 
 - Python 3.10+
 - OpenAI API Key
 
-### 1é””å¿Šå„¯ éˆí²¬é¦æ‹Œç¹ç›í²Œ
+### 1ï¸âƒ£ Local Development
 
 ```bash
-# éå¬®æ®•æ¤¤åœ­æ´°
-cd 1_customer_support_agent
+# Clone the repository
+git clone https://github.com/BOWang-hu/-ai-customer-support-agent.git
+cd -ai-customer-support-agent
 
-# é–°å¶‡ç–†éœí²¯æ¾§å†¨å½‰é–²í²
+# Configure environment
 cp .env.example .env
-# ç¼‚æ ¬ç·« .envé”›å±½ï½éãƒ¤ç¶˜é¨í²„ OPENAI_API_KEY
+# Edit .env with your OPENAI_API_KEY
 
-# ç€¹å¤í²£å‘¬ç··ç’§í²–
+# Install dependencies
 pip install -r requirements.txt
 
-# éší²¯é”í²¨ API éˆå¶…å§Ÿ
+# Start API server
 uvicorn app.main:app --reload
-# API æ©æ„¯í²¡å±½æ¹ª http://localhost:8000
+# API runs at http://localhost:8000
 
-# é‚æ‰®ç²“ç»”í²¯éší²¯é”í²¨ Web UI
+# Start Web UI (new terminal)
 streamlit run app/ui.py
-# UI æ©æ„¯í²¡å±½æ¹ª http://localhost:8501
+# UI runs at http://localhost:8501
 ```
 
-### 2é””å¿Šå„¯ Docker é–®ã„§è®²
+### 2ï¸âƒ£ Docker Deployment
 
 ```bash
-# ç¼‚æ ¬ç·« .env é‚å›¦æ¬¢æ¿‰í²«éí²¥ API Key
+# Edit .env with your API Key
 cp .env.example .env
 
-# æ¶“í²€é–¿í²®éší²¯é”í²¨
+# One-click start
 docker-compose up -d
 
-# ç’å—æ£¶ UI: http://localhost:8501
-# API é‚å›¨ã€‚: http://localhost:8000/docs
+# Access UI: http://localhost:8501
+# API docs: http://localhost:8000/docs
 ```
 
-### 3é””å¿Šå„¯ API ç’‹å†ªæ•¤ç»€è½°ç·¥
+### 3ï¸âƒ£ API Usage Example
 
 ```python
 import requests
 
 response = requests.post(
     "http://localhost:8000/chat",
-    json={"message": "éŒãƒ¤ç«´æ¶“å¬­í²®ãˆ å´Ÿ ORD-2024-001 é¨å‹­å§¸é¬í²", "session_id": "user123"}
+    json={"message": "Check order ORD-2024-001 status", "session_id": "user123"}
 )
 print(response.json()["reply"])
-# æˆæ’³åš­: ç’ãˆ å´Ÿ ORD-2024-001 é˜èˆµí²€í²: å®¸æ’å½‚ç’í²§, æ£°å‹®í²®ï¿ í²€ä½½æª: 2024-12-25, éµèƒ¯ç¹éŸí²†: æ¤¤è½°èµ´é–«ç†»ç¹
+# Output: Order ORD-2024-001 status: Shipped, ETA: 2024-12-25, Carrier: SF Express
 ```
 
-## é¦ƒæ§ æ¤¤åœ­æ´°ç¼æ’´ç€¯
+## ğŸ“ Project Structure
 
 ```
-1_customer_support_agent/
-éˆ¹æº¾æ”¢éˆ¹í²€ app/
-éˆ¹í²‚   éˆ¹æº¾æ”¢éˆ¹í²€ __init__.py      # é–°å¶‡ç–†ç» ï¼„æ‚Š
-éˆ¹í²‚   éˆ¹æº¾æ”¢éˆ¹í²€ main.py          # FastAPI æ´æ—‚æ•¤éãƒ¥å½›
-éˆ¹í²‚   éˆ¹æº¾æ”¢éˆ¹í²€ agent.py         # LangChain Agent éç¨¿ç¸¾é–«æ˜ç·«
-éˆ¹í²‚   éˆ¹æ–ºæ”¢éˆ¹í²€ ui.py            # Streamlit é¢ã„¦åŸ›é£å²„æ½°
-éˆ¹æº¾æ”¢éˆ¹í²€ knowledge_base/      # é­ãƒ¨ç˜‘æ´æ’´æƒæµ å‰æ´°è¤°í²•
-éˆ¹æº¾æ”¢éˆ¹í²€ .env.example         # éœí²¯æ¾§å†¨å½‰é–²å¿”Äé‰í²¿
-éˆ¹æº¾æ”¢éˆ¹í²€ requirements.txt     # Python æ¸šæ¿Šç¦†
-éˆ¹æº¾æ”¢éˆ¹í²€ Dockerfile           # ç€¹ç‘°æ«’é‹å‹«ç¼“é‚å›¦æ¬¢
-éˆ¹æº¾æ”¢éˆ¹í²€ docker-compose.yml   # ç€¹ç‘°æ«’ç¼‚æ ¨å¸“
-éˆ¹æ–ºæ”¢éˆ¹í²€ README.md            # æ¤¤åœ­æ´°ç’‡å­˜æ§‘
+-ai-customer-support-agent/
+â”œâ”€â”€ app/
+â”‚   â”œâ”€â”€ __init__.py      # Configuration management
+â”‚   â”œâ”€â”€ main.py          # FastAPI application entry
+â”‚   â”œâ”€â”€ agent.py         # LangChain Agent core logic
+â”‚   â””â”€â”€ ui.py            # Streamlit user interface
+â”œâ”€â”€ knowledge_base/      # Knowledge base files (optional)
+â”œâ”€â”€ .env.example         # Environment variable template
+â”œâ”€â”€ requirements.txt     # Python dependencies
+â”œâ”€â”€ Dockerfile           # Container build
+â”œâ”€â”€ docker-compose.yml   # Container orchestration
+â””â”€â”€ README.md            # Project documentation
 ```
 
-## éˆ¿æ¬™ç¬ é¶í²€éˆí²¯ç‘•ä½ºå£
+## ğŸ› ï¸ Technical Highlights
 
-1. **Agent å¦¯â€³ç´¡**: æµ£è·¨æ•¤ OpenAI Tools Agenté”›å­¡LM é‘·í²ªæ¶“è¯²å–…ç€¹æ°³çšŸé¢ã„¥æ‘¢æµœæ¶˜ä¼éí²·
-2. **ç€µç¡…ç˜½ç’æ¿ç¹‚**: ConversationSummaryBufferMemory é‘·í²ªé”ã„¦í²€è¤ç²¨é—€å®í²¯ç¡…ç˜½é”›å±¾å¸¶é’í²¶ token å¨‘å £í²€í²—
-3. **å®¸ãƒ¥å¿çä½½í²£í²…**: å§£å¿é‡œç€¹ãˆ¡æ¹‡é”ç†»å…˜çä½½í²£å‘¬è´Ÿé™í²¬ç»”í²‹ Toolé”›å±¼ç©¶æµœåº¢å¢¿çí²•
-4. **é–¿æ¬’í²¯í²¯æ¾¶å‹­æ‚Š**: æ¾¶æ°¬çœ°å¯®å‚šçˆ¶é¹æ›¡å¹é”›å­‰PI Key éˆí²ªé–°å¶‡ç–†éƒæƒ°åšœé”ã„©æª·ç»¾Ñ‚è´Ÿå¦¯â„ƒå«™å¦¯â€³ç´¡
+1. **Agent Pattern**: Uses OpenAI Tools Agent â€” LLM autonomously decides which tools to invoke
+2. **Conversation Memory**: `ConversationSummaryBufferMemory` auto-summarizes long conversations, controlling token consumption
+3. **Tool Encapsulation**: Each customer service function is an independent Tool, easy to extend
+4. **Graceful Degradation**: Multi-layer exception handling; auto-switches to mock mode when API Key is missing
+5. **Session Management**: Supports multi-user sessions with independent conversation histories
 
-## é¦ƒæ‘‘ License
+## ğŸ“„ License
 
 MIT

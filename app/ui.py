@@ -1,29 +1,32 @@
 """
-AI 瀹㈡湇鑱婂ぉ鏈哄櫒浜��� - Streamlit 鐢ㄦ埛鐣岄潰
+AI Customer Support Agent - Streamlit User Interface
+
+Provides a friendly chat interface for the customer service agent.
 """
 from __future__ import annotations
 
 import os
 import sys
+import uuid
 from pathlib import Path
 
 import streamlit as st
 import requests
 
-# 娣诲姞椤圭洰鏍圭洰褰曞埌 path
+# Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app import settings
 
-# ===== 椤甸潰閰嶇疆 =====
+# ===== Page Configuration =====
 st.set_page_config(
-    page_title="AI 鏅鸿兘瀹㈡湇",
-    page_icon="馃������",
+    page_title="AI Smart Customer Service",
+    page_icon="🎯",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# ===== 鏍峰紡 =====
+# ===== Custom Styles =====
 st.markdown("""
 <style>
     .chat-message-human {
@@ -59,94 +62,110 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# API base URL
+API_BASE = os.getenv("API_BASE_URL", "http://localhost:8000")
 
-# ===== 渚ц竟鏍��� =====
+
+# ===== Session State Initialization =====
+def init_session_state():
+    """Initialize all session state variables."""
+    if "messages" not in st.session_state:
+        st.session_state.messages = [
+            {
+                "role": "ai",
+                "content": (
+                    "Hello! I'm your AI Customer Service Assistant 🎯\n\n"
+                    "I can help you with:\n"
+                    "- 📦 Order status inquiries\n"
+                    "- 🔄 Return/exchange policies\n"
+                    "- ❓ FAQ answers\n"
+                    "- ⏰ Time queries\n\n"
+                    "How can I help you today?"
+                ),
+            }
+        ]
+
+    if "pending_question" not in st.session_state:
+        st.session_state.pending_question = None
+
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())[:8]
+
+
+init_session_state()
+
+
+# ===== Sidebar =====
 with st.sidebar:
-    st.title("馃������ AI 鏅鸿兘瀹㈡湇")
+    st.title("🎯 AI Customer Service")
     st.markdown("---")
 
-    # API 閰嶇疆鐘舵������
+    # API configuration status
     api_ok = settings.is_api_key_set
     if api_ok:
-        st.success("鉁��� API 宸查厤缃���")
+        st.success("✅ API Configured")
     else:
-        st.warning("鈿狅笍 鏈���閰嶇疆 API Key")
-        st.info("璇峰垱寤��� .env 鏂囦欢骞惰���剧疆 OPENAI_API_KEY")
+        st.warning("⚠️ API Key not set")
+        st.info("Create a `.env` file and set `OPENAI_API_KEY`")
 
-    st.markdown("### 鍏充簬")
+    st.markdown("### About")
     st.markdown("""
-    鍩轰簬 LangChain 鏋勫缓鐨��� AI 瀹㈡湇浠ｇ悊锛屾敮鎸侊細
-    - 馃摝 璁㈠崟鏌ヨ������
-    - 馃攧 閫���鎹㈣揣鏀跨瓥
-    - 鉂��� 甯歌���侀棶棰���
-    - 馃幆 鍏朵粬鍜ㄨ���㈡湇鍔���
+    AI customer service agent built with LangChain.
+    - 📦 Order tracking
+    - 🔄 Return policy
+    - ❓ FAQ
+    - 🎯 Other services
     """)
 
-    st.markdown("### 蹇���閫熸彁闂���")
+    st.markdown("### Quick Questions")
     quick_questions = [
-        "鏌ヤ竴涓嬭���㈠崟 ORD-2024-001 鐨勭姸鎬���",
-        "浣犱滑鐨勯������鎹㈣揣鏀跨瓥鏄���浠���涔堬紵",
-        "浠���涔堟椂鍊欏彂璐э紵",
-        "鐜板湪鍑犵偣浜嗭紵",
+        "Check order ORD-2024-001 status",
+        "What's your return policy?",
+        "When do you ship?",
+        "What time is it now?",
     ]
     for q in quick_questions:
         if st.button(q, use_container_width=True):
             st.session_state.pending_question = q
 
     st.markdown("---")
-    if st.button("馃棏锔��� 娓呯┖瀵硅瘽", use_container_width=True):
+    if st.button("🗑️ Clear Chat", use_container_width=True):
         st.session_state.messages = []
+        st.session_state.session_id = str(uuid.uuid4())[:8]
         st.rerun()
 
-
-# ===== 涓昏亰澶╃晫闈��� =====
-
-# 鍒濆���嬪寲浼氳瘽鐘舵������
-if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "ai", "content": "浣犲ソ锛佹垜鏄���鏅鸿兘瀹㈡湇灏忔櫤 馃���朶n\n璇烽棶鏈変粈涔堝彲浠ュ府鍔╀綘鐨勶紵浣犲彲浠ユ煡璇㈣���㈠崟銆佷簡瑙ｉ������鎹㈣揣鏀跨瓥銆佸挩璇㈠父瑙侀棶棰樼瓑銆���"}
-    ]
-
-if "pending_question" not in st.session_state:
-    st.session_state.pending_question = None
-
-if "session_id" not in st.session_state:
-    import uuid
-    st.session_state.session_id = str(uuid.uuid4())[:8]
-
-# API 鍩虹������ URL
-API_BASE = os.getenv("API_BASE_URL", "http://localhost:8000")
+    # Session ID display
+    st.caption(f"Session: {st.session_state.session_id}")
 
 
-# 鏄剧ず鑱婂ぉ鍘嗗彶
+# ===== Main Chat Interface =====
+
+# Display chat history
 chat_container = st.container()
 
 with chat_container:
     for msg in st.session_state.messages:
         if msg["role"] == "human":
             st.markdown(
-                f'<div class="chat-message-human">馃檪 {msg["content"]}</div>',
+                f'<div class="chat-message-human">👤 {msg["content"]}</div>',
                 unsafe_allow_html=True,
             )
         else:
             st.markdown(
-                f'<div class="chat-message-ai">馃������ {msg["content"]}</div>',
+                f'<div class="chat-message-ai">🤖 {msg["content"]}</div>',
                 unsafe_allow_html=True,
             )
 
 
-# 澶勭悊寰呭���勭悊闂���棰���
-if st.session_state.pending_question:
-    question = st.session_state.pending_question
-    st.session_state.pending_question = None
-    # 鐩存帴鍙戦������
-    st.session_state.messages.append({"role": "human", "content": question})
+def send_message(message: str):
+    """Send a message to the API and update the chat."""
+    st.session_state.messages.append({"role": "human", "content": message})
 
-    with st.spinner("灏忔櫤姝ｅ湪鎬濊������..."):
+    with st.spinner("Thinking..."):
         try:
             response = requests.post(
                 f"{API_BASE}/chat",
-                json={"message": question, "session_id": st.session_state.session_id},
+                json={"message": message, "session_id": st.session_state.session_id},
                 timeout=30,
             )
             if response.status_code == 200:
@@ -155,65 +174,49 @@ if st.session_state.pending_question:
             else:
                 st.session_state.messages.append({
                     "role": "ai",
-                    "content": f"馃槄 鎶辨瓑锛岃���锋眰鍑洪敊浜嗭細{response.text}"
+                    "content": f"😅 Sorry, request failed: {response.text}"
                 })
         except requests.exceptions.ConnectionError:
             st.session_state.messages.append({
                 "role": "ai",
-                "content": "馃槄 鏃犳硶杩炴帴鍒��� API 鏈嶅姟鍣���锛岃���风‘璁ゅ悗绔���宸插惎鍔ㄣ���俓n\n杩愯���屽懡浠わ細`uvicorn app.main:app --reload`"
+                "content": (
+                    "😅 Cannot connect to the API server. "
+                    "Please make sure the backend is running.\n\n"
+                    "Run: `uvicorn app.main:app --reload`"
+                )
             })
         except Exception as e:
             st.session_state.messages.append({
                 "role": "ai",
-                "content": f"馃槄 鍑洪敊浜嗭細{str(e)}"
+                "content": f"😅 Error: {str(e)}"
             })
+
+
+# Handle pending question
+if st.session_state.pending_question:
+    question = st.session_state.pending_question
+    st.session_state.pending_question = None
+    send_message(question)
     st.rerun()
 
-
-# 鐢ㄦ埛杈撳叆
+# User input
 st.markdown("---")
 with st.container():
     col1, col2 = st.columns([6, 1])
     with col1:
         user_input = st.text_input(
-            "杈撳叆浣犵殑闂���棰���...",
+            "Type your message...",
             key="user_input",
-            placeholder="渚嬪���傦細鏌ヤ竴涓嬫垜鐨勮���㈠崟鐘舵������",
+            placeholder="e.g., Check my order status",
             label_visibility="collapsed",
         )
     with col2:
-        send = st.button("鍙戦������ 馃摛", use_container_width=True)
+        send = st.button("Send 📤", use_container_width=True)
 
     if send and user_input:
-        st.session_state.messages.append({"role": "human", "content": user_input})
-
-        with st.spinner("灏忔櫤姝ｅ湪鎬濊������..."):
-            try:
-                response = requests.post(
-                    f"{API_BASE}/chat",
-                    json={"message": user_input, "session_id": st.session_state.session_id},
-                    timeout=30,
-                )
-                if response.status_code == 200:
-                    reply = response.json()["reply"]
-                    st.session_state.messages.append({"role": "ai", "content": reply})
-                else:
-                    st.session_state.messages.append({
-                        "role": "ai",
-                        "content": f"馃槄 鎶辨瓑锛岃���锋眰鍑洪敊浜嗭細{response.text}"
-                    })
-            except requests.exceptions.ConnectionError:
-                st.session_state.messages.append({
-                    "role": "ai",
-                    "content": "馃槄 鏃犳硶杩炴帴鍒��� API 鏈嶅姟鍣���锛岃���风‘璁ゅ悗绔���宸插惎鍔ㄣ���俓n\n杩愯���屽懡浠わ細`uvicorn app.main:app --reload`"
-                })
-            except Exception as e:
-                st.session_state.messages.append({
-                    "role": "ai",
-                    "content": f"馃槄 鍑洪敊浜嗭細{str(e)}"
-                })
+        send_message(user_input)
         st.rerun()
 
-# 搴曢儴鎻愮ず
+# Footer
 st.markdown("---")
-st.caption("馃挕 鎻愮ず锛氳緭鍏ヤ换鎰忛棶棰樺紑濮嬪���硅瘽锛屾垨鐐瑰嚮宸︿晶蹇���鎹烽棶棰���")
+st.caption("💡 Type a question to start chatting, or click a quick question on the left")
